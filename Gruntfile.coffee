@@ -4,7 +4,7 @@ module.exports = (grunt) ->
 
     #watch for changes in files
     watch:
-      files: ['Gruntfile.coffee', 'src/coffee/*.coffee', 'src/sass/*.sass']
+      files: ['Gruntfile.coffee', 'src/coffee/**/*.coffee', 'src/sass/*.sass']
       tasks: 'onwatch'
 
     #compile coffee files
@@ -41,7 +41,7 @@ module.exports = (grunt) ->
 
   #add event to listen for file changes
   grunt.event.on "watch", (action, filepath, target) ->
-    grunt.log.writeln "#{filepath} has #{action}"
+    #grunt.log.writeln "#{filepath} has #{action}"
 
   grunt.loadNpmTasks 'grunt-coffee-percolator-v2'
   grunt.loadNpmTasks 'grunt-contrib-watch'
