@@ -8,10 +8,19 @@ module.exports = (grunt) ->
       tasks: 'onwatch'
 
     #compile coffee files
-    coffee:
-      lib:
-        files:
-          'deploy/js/all.js': 'src/**/*.coffee'
+    percolator:
+      main:
+        source: 'src/coffee'
+        output: 'deploy/js/main.js'
+        main: 'Main.coffee'
+        compile: true
+        opts: "--bare"
+      app:
+        source: 'src/coffee'
+        output: 'deploy/js/app.js'
+        main: 'Application.coffee'
+        compile: true
+        opts: "--bare"
 
     #compile sass files
     sass:
@@ -24,19 +33,19 @@ module.exports = (grunt) ->
     #uglify javascript
     uglify:
       options:
-        mangle: false
+        mangle: true
       my_target:
         files:
-          'deploy/js/all.min.js': ['deploy/js/all.js']
+          'deploy/js/app.min.js': ['deploy/js/app.js']
 
   #add event to listen for file changes
   grunt.event.on "watch", (action, filepath, target) ->
     grunt.log.writeln "#{filepath} has #{action}"
 
-  grunt.loadNpmTasks 'grunt-contrib-coffee'
+  grunt.loadNpmTasks 'grunt-coffee-percolator-v2'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-sass'
 
-  grunt.registerTask 'default', ['watch']
-  grunt.registerTask 'onwatch', ['coffee', 'sass', 'uglify']
+  grunt.registerTask 'default', ['watch', 'percolator:main']
+  grunt.registerTask 'onwatch', ['percolator:app', 'sass']
