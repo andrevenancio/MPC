@@ -3,7 +3,7 @@
 loads all samples, this is where we access all the bufferdata from all the audio files
 */
 
-var Application, Mixer16, Sampler,
+var Application, Mixer8, Sampler,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 Sampler = (function() {
@@ -68,8 +68,17 @@ Sampler = (function() {
 
 })();
 
-Mixer16 = (function() {
-  function Mixer16() {
+Mixer8 = (function() {
+  function Mixer8(context) {
+    this.context = context;
+    this.channel1 = this.context.createGain();
+    this.channel2 = this.context.createGain();
+    this.channel3 = this.context.createGain();
+    this.channel4 = this.context.createGain();
+    this.channel5 = this.context.createGain();
+    this.channel6 = this.context.createGain();
+    this.channel7 = this.context.createGain();
+    this.channel8 = this.context.createGain();
     /*
     // Create a gain node.
     var gainNode = context.createGain();
@@ -81,7 +90,7 @@ Mixer16 = (function() {
 
   }
 
-  return Mixer16;
+  return Mixer8;
 
 })();
 
@@ -95,7 +104,7 @@ Application = (function() {
     this.gui = new dat.GUI();
     this.progressbar = this.gui.add(this, 'loadedSamples').listen();
     this.context = new webkitAudioContext();
-    this.mixer = new Mixer16();
+    this.mixer = new Mixer8(this.context);
     window.addEventListener('sampler-load-progress', this.onSamplerLoadProgress, false);
     window.addEventListener('sampler-load-complete', this.onSamplerLoadComplete, false);
     this.sampler = new Sampler(this.context);

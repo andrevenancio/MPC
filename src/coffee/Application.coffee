@@ -1,5 +1,5 @@
 #import app.audio.sampler
-#import app.audio.mixer16
+#import app.audio.mixer8
 class Application
   loadedSamples: ''
   constructor: ->
@@ -10,8 +10,8 @@ class Application
     #sets global AudioContext
     @context = new webkitAudioContext()
 
-    #adds a mixer with 16 channels
-    @mixer = new Mixer16();
+    #adds a mixer with 8 channels
+    @mixer = new Mixer8 @context
 
     #TODO: dispatch events from the Sampler instead of the window
     window.addEventListener 'sampler-load-progress', @onSamplerLoadProgress, false

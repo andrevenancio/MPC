@@ -29,7 +29,7 @@ module.exports = (grunt) ->
           style: 'expanded'
           noCache: true
         files:
-          'deploy/css/main.css': 'src/sass/reset.sass'
+          'deploy/css/style.css': 'src/sass/style.sass'
       
     #uglify javascript
     uglify:
