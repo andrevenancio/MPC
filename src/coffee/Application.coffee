@@ -1,4 +1,5 @@
 #import app.audio.sampler
+#import app.audio.mixer16
 class Application
   loadedSamples: ''
   constructor: ->
@@ -8,6 +9,9 @@ class Application
 
     #sets global AudioContext
     @context = new webkitAudioContext()
+
+    #adds a mixer with 16 channels
+    @mixer = new Mixer16();
 
     #TODO: dispatch events from the Sampler instead of the window
     window.addEventListener 'sampler-load-progress', @onSamplerLoadProgress, false
@@ -39,7 +43,7 @@ class Application
 
 
 
-  playSound: (buffer) ->
+  playSound: (buffer, time) ->
     #creates a sound source
     source = @context.createBufferSource()
     #tell the source which sound to play
@@ -47,5 +51,5 @@ class Application
     #connect the source to the context's destination (the speakers)
     source.connect @context.destination
     #play the source now
-    source.start 0
+    source.start time
     null

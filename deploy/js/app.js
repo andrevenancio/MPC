@@ -3,7 +3,7 @@
 loads all samples, this is where we access all the bufferdata from all the audio files
 */
 
-var Application, Sampler,
+var Application, Mixer16, Sampler,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 Sampler = (function() {
@@ -68,6 +68,23 @@ Sampler = (function() {
 
 })();
 
+Mixer16 = (function() {
+  function Mixer16() {
+    /*
+    // Create a gain node.
+    var gainNode = context.createGain();
+    // Connect the source to the gain node.
+    source.connect(gainNode);
+    // Connect the gain node to the destination.
+    gainNode.connect(context.destination);
+    */
+
+  }
+
+  return Mixer16;
+
+})();
+
 Application = (function() {
   Application.prototype.loadedSamples = '';
 
@@ -78,6 +95,7 @@ Application = (function() {
     this.gui = new dat.GUI();
     this.progressbar = this.gui.add(this, 'loadedSamples').listen();
     this.context = new webkitAudioContext();
+    this.mixer = new Mixer16();
     window.addEventListener('sampler-load-progress', this.onSamplerLoadProgress, false);
     window.addEventListener('sampler-load-complete', this.onSamplerLoadComplete, false);
     this.sampler = new Sampler(this.context);
@@ -109,12 +127,12 @@ Application = (function() {
     return null;
   };
 
-  Application.prototype.playSound = function(buffer) {
+  Application.prototype.playSound = function(buffer, time) {
     var source;
     source = this.context.createBufferSource();
     source.buffer = buffer;
     source.connect(this.context.destination);
-    source.start(0);
+    source.start(time);
     return null;
   };
 
