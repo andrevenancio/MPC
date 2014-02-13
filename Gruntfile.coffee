@@ -27,7 +27,7 @@ module.exports = (grunt) ->
       dist:
         options:
           style: 'expanded'
-          noCache: false
+          noCache: true
         files:
           'deploy/css/main.css': 'src/sass/reset.sass'
       

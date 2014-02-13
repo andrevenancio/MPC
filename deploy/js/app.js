@@ -2,13 +2,16 @@
 var Application, Sampler;
 
 Sampler = (function() {
-  function Sampler(context, urlList, callback) {
+  function Sampler(context, callback) {
     this.context = context;
-    this.urlList = urlList;
     this.onload = callback;
-    this.bufferList = new Array();
-    this.loadCount = 0;
+    this.count = 0;
   }
+
+  Sampler.prototype.load = function(url) {
+    this.count++;
+    return null;
+  };
 
   Sampler.prototype.loadBuffer = function(url, index) {
     var request,
