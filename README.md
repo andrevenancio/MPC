@@ -13,7 +13,7 @@ Available methods:
 
 
 Mixer16
-___
+---
 16 Track Mixer. Handles volume
 
 ##Running local version
