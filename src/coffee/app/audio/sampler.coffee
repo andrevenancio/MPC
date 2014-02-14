@@ -1,12 +1,10 @@
-###
-loads all samples, this is where we access all the bufferdata from all the audio files
-###
 class Sampler
   constructor: (context) ->
     @context = context
     @memory =
       files: []
       buffers: []
+      sources: []
 
   #adds file to sampler
   add: (url) ->

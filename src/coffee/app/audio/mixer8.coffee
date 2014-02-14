@@ -2,20 +2,31 @@ class Mixer8
   constructor: (context) ->
     @context = context;
     
-    @channel1 = @context.createGain()
-    @channel2 = @context.createGain()
-    @channel3 = @context.createGain()
-    @channel4 = @context.createGain()
-    @channel5 = @context.createGain()
-    @channel6 = @context.createGain()
-    @channel7 = @context.createGain()
-    @channel8 = @context.createGain()
+    @master = new Fader @context, @context.destination
 
-    ###
-    // Create a gain node.
-    var gainNode = context.createGain();
-    // Connect the source to the gain node.
-    source.connect(gainNode);
-    // Connect the gain node to the destination.
-    gainNode.connect(context.destination);
-    ###
+    @channels = []
+    @channels[0] = new Fader @context, @master.input
+    @channels[1] = new Fader @context, @master.input
+    @channels[2] = new Fader @context, @master.input
+    @channels[3] = new Fader @context, @master.input
+    @channels[4] = new Fader @context, @master.input
+    @channels[5] = new Fader @context, @master.input
+    @channels[6] = new Fader @context, @master.input
+    @channels[7] = new Fader @context, @master.input
+  
+class Fader
+  constructor: (context, output) ->
+    @context = context
+    @volume = 1
+
+    @input = @context.createGain()
+    @input.connect output
+
+  changeVolume: (value) ->
+    #linear equation
+    #@input.gain.value = value    
+
+    #x-squared equation
+    fraction = value / 1
+    @input.gain.value = fraction * fraction
+    null
