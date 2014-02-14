@@ -1,7 +1,8 @@
 #import app.audio.sampler
 #import app.audio.mixer8
+#import app.audio.filter
 class Application
-  loadedSamples: ''
+  log: 'please wait...'
   sources: []
   isPlaying: false
   constructor: ->
@@ -12,6 +13,10 @@ class Application
 
     #adds a mixer with 8 channels
     @mixer = new Mixer8 @context
+
+    #adds a low-pass filter to the master channel of the mixer
+    @lowpass = new Filter @context, Filter.LOW_PASS, @mixer.master.input, @mixer.master.output
+    @lowpass.toggle true
 
     #adds sampler
     @sampler = new Sampler @context
@@ -25,32 +30,44 @@ class Application
     window.addEventListener 'sampler-load-progress', @onSamplerLoadProgress, false
     window.addEventListener 'sampler-load-complete', @onSamplerLoadComplete, false    
 
-    #adds dat.GUI()
-    @gui = new dat.GUI();
-    @progressbar = @gui.add(@, 'loadedSamples').listen()
+    @init()
+
+  init: ->
+    #setup dat gui component
+    @gui = new dat.GUI()
+    @gui.add(@, 'log').listen()
+
+    @folder_mixer = @gui.addFolder 'Mixer'
+    @folder_mixer.add(@mixer.channels[0], 'volume', 0, 1).name('Bass').onChange((value)=>@mixer.channels[0].changeVolume(value))
+    @folder_mixer.add(@mixer.channels[1], 'volume', 0, 1).name('Drums').onChange((value)=>@mixer.channels[1].changeVolume(value))
+    @folder_mixer.add(@mixer.channels[2], 'volume', 0, 1).name('Guitar').onChange((value)=>@mixer.channels[2].changeVolume(value))
+    @folder_mixer.add(@mixer.channels[3], 'volume', 0, 1).name('Effects').onChange((value)=>@mixer.channels[3].changeVolume(value))
+    @folder_mixer.add(@mixer.channels[4], 'volume', 0, 1).name('Voice').onChange((value)=>@mixer.channels[4].changeVolume(value))
+    
+    @folder_master = @folder_mixer.addFolder 'Master'
+    @filter_folder = @folder_master.addFolder 'Filter'
+
+    test =
+      q: 0
+      frequency: 1
+    @filter_folder.add(test, 'q', 0, 1).onChange((value)=>@lowpass.changeQuality(value))
+    @filter_folder.add(test, 'frequency', 0, 1).onChange((value)=>@lowpass.changeFrequency(value))
+    @folder_master.add(@mixer.master, 'volume', 0, 1).name('MASTER').onChange((value)=>@mixer.master.changeVolume(value))
+    
+    @gui.add(@, 'playAll').name('Play')
+    @gui.add(@, 'stopAll').name('Stop')
 
     #starts loading the samples
     @sampler.load()
 
   onSamplerLoadProgress: (e) =>
-    @loadedSamples = 'Loading ' + e.detail.progress + '/' + e.detail.total
+    @log = 'Loading ' + e.detail.progress + '/' + e.detail.total
     null
 
   onSamplerLoadComplete: (e) =>
-    @gui.remove @progressbar
-   
-    mixer = @gui.addFolder 'Mixer'
-    mixer.add(@mixer.channels[0], 'volume', 0, 1).name('Bass').onChange((value)=>@mixer.channels[0].changeVolume(value))
-    mixer.add(@mixer.channels[1], 'volume', 0, 1).name('Drums').onChange((value)=>@mixer.channels[1].changeVolume(value))
-    mixer.add(@mixer.channels[2], 'volume', 0, 1).name('Guitar').onChange((value)=>@mixer.channels[2].changeVolume(value))
-    mixer.add(@mixer.channels[3], 'volume', 0, 1).name('Effects').onChange((value)=>@mixer.channels[3].changeVolume(value))
-    mixer.add(@mixer.channels[4], 'volume', 0, 1).name('Voice').onChange((value)=>@mixer.channels[4].changeVolume(value))
-    master = mixer.addFolder 'Master'
-    master.open()
-    master.add(@mixer.master, 'volume', 0, 1).name('MASTER').onChange((value)=>@mixer.master.changeVolume(value))
-
-    @gui.add(@, 'playAll').name('Play sounds')
-    @gui.add(@, 'stopAll').name('Stop sounds')
+    @log = 'All samples Loaded'
+    @folder_mixer.open()
+    @folder_master.open()
     null
 
   playAll: =>
@@ -89,8 +106,3 @@ class Application
     source.start time_
     @sources.push source
     null
-
-
-
-
-

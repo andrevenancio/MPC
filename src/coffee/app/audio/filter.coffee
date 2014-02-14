@@ -1,80 +1,62 @@
+#http://www.w3.org/TR/webaudio/#BiquadFilterNode-section
 class Filter
-  constructor: (type = 0, frequency = 440) ->
+  @LOW_PASS: 0
+  @HIGH_PASS: 1
+  @BAND_PASS: 2
+  @LOW_SHELF: 3
+  @HIGH_SHELF: 4
+  @PEAKING: 5
+  @NOTCH: 6
+  @ALL_PASS: 7
+
+  @QUAL_MUL: 30
+
+  constructor: (context, type = Filter.LOW_PASS, input, output) ->
+    @context = context
     @type = type
-    @frequency = frequency
+    @input = input
+    @output = output
+
+    @frequency = 0
+    @Q = 0
+
+    @filter = @context.createBiquadFilter()
+    @filter.type = @type
+    @filter.frequency.value = 5000
+    #Connect source to filter, filter to destination.
+    @input.connect @filter
+    @filter.connect @output
+
+  #enables disables filter. boolean
+  toggle: (enable) ->
+    @input.disconnect 0
+    @filter.disconnect 0
+
+    if enable
+      #Connect through the filter.
+      @input.connect @filter
+      @filter.connect @output
+    else
+      #Otherwise, connect directly.
+      @input.connect @output
+    null
+
+  #changes quality curve of filter. Number 0-1
+  changeQuality: (value) ->
+    @Q = value * Filter.QUAL_MUL
+    @filter.Q.value = @Q
+    null
 
 
-###
-
-http://www.html5rocks.com/en/tutorials/webaudio/intro/
-
-var FilterSample = {
-  FREQ_MUL: 7000,
-  QUAL_MUL: 30,
-  playing: false
-};
-
-FilterSample.play = function() {
-  // Create the source.
-  var source = context.createBufferSource();
-  source.buffer = BUFFERS.techno;
-  // Create the filter.
-  var filter = context.createBiquadFilter();
-  filter.type = 0; // LOWPASS
-  filter.frequency.value = 5000;
-  // Connect source to filter, filter to destination.
-  source.connect(filter);
-  filter.connect(context.destination);
-  // Play!
-  if (!source.start)
-    source.start = source.noteOn;
-  source.start(0);
-  source.loop = true;
-  // Save source and filterNode for later access.
-  this.source = source;
-  this.filter = filter;
-};
-
-FilterSample.stop = function() {
-  if (!this.source.stop)
-    this.source.stop = source.noteOff;
-  this.source.stop(0);
-  this.source.noteOff(0);
-};
-
-FilterSample.toggle = function() {
-  this.playing ? this.stop() : this.play();
-  this.playing = !this.playing;
-};
-
-FilterSample.changeFrequency = function(element) {
-  // Clamp the frequency between the minimum value (40 Hz) and half of the
-  // sampling rate.
-  var minValue = 40;
-  var maxValue = context.sampleRate / 2;
-  // Logarithm (base 2) to compute how many octaves fall in the range.
-  var numberOfOctaves = Math.log(maxValue / minValue) / Math.LN2;
-  // Compute a multiplier from 0 to 1 based on an exponential scale.
-  var multiplier = Math.pow(2, numberOfOctaves * (element.value - 1.0));
-  // Get back to the frequency value between min and max.
-  this.filter.frequency.value = maxValue * multiplier;
-};
-
-FilterSample.changeQuality = function(element) {
-  this.filter.Q.value = element.value * this.QUAL_MUL;
-};
-
-FilterSample.toggleFilter = function(element) {
-  this.source.disconnect(0);
-  this.filter.disconnect(0);
-  // Check if we want to enable the filter.
-  if (element.checked) {
-    // Connect through the filter.
-    this.source.connect(this.filter);
-    this.filter.connect(context.destination);
-  } else {
-    // Otherwise, connect directly.
-    this.source.connect(context.destination);
-  }
-};
-###
+  changeFrequency: (value) ->
+    #Clamp the frequency between the minimum value (40 Hz) and half of the sampling rate.
+    minValue = 40
+    maxValue = @context.sampleRate / 2
+    #Logarithm (base 2) to compute how many octaves fall in the range.
+    numberOfOctaves = Math.log(maxValue / minValue) / Math.LN2
+    #Compute a multiplier from 0 to 1 based on an exponential scale.
+    multiplier = Math.pow(2, numberOfOctaves * (value - 1.0))
+    #Get back to the frequency value between min and max.
+    @frequency = maxValue * multiplier
+    @filter.frequency.value = @frequency
+    null

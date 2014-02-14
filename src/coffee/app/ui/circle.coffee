@@ -1,2 +1,5 @@
 class Circle
-  constructor: ->
+  constructor: (context) ->
+    @context = context
+
+  

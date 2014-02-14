@@ -18,9 +18,11 @@ class Fader
   constructor: (context, output) ->
     @context = context
     @volume = 1
-
     @input = @context.createGain()
-    @input.connect output
+    @output = output
+
+
+    @input.connect @output
 
   changeVolume: (value) ->
     #linear equation
