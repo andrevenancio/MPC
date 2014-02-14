@@ -4,7 +4,7 @@ module.exports = (grunt) ->
 
     #watch for changes in files
     watch:
-      files: ['Gruntfile.coffee', 'src/coffee/**/*.coffee', 'src/sass/*.sass']
+      files: ['Gruntfile.coffee', 'src/coffee/*coffee', 'src/coffee/**/*.coffee', 'src/sass/*.sass']
       tasks: 'onwatch'
 
     #compile coffee files

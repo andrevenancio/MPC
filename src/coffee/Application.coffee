@@ -1,6 +1,7 @@
 #import app.audio.sampler
 #import app.audio.mixer8
 #import app.audio.filter
+#import app.visualizer
 class Application
   log: 'please wait...'
   sources: []
@@ -28,11 +29,16 @@ class Application
     
     #TODO: dispatch events from the Sampler instead of the window
     window.addEventListener 'sampler-load-progress', @onSamplerLoadProgress, false
-    window.addEventListener 'sampler-load-complete', @onSamplerLoadComplete, false    
+    window.addEventListener 'sampler-load-complete', @onSamplerLoadComplete, false   
 
+    #initializes some visualizer and attaches it to a mixer so we can use any channel
+    @visualizer = new Visualizer(@mixer)
     @init()
 
   init: ->
+    #disables any click
+    document.body.style['pointer-events'] = 'none'
+
     #setup dat gui component
     @gui = new dat.GUI()
     @gui.add(@, 'log').listen()
@@ -66,8 +72,7 @@ class Application
 
   onSamplerLoadComplete: (e) =>
     @log = 'All samples Loaded'
-    @folder_mixer.open()
-    @folder_master.open()
+    document.body.style['pointer-events'] = 'auto'
     null
 
   playAll: =>
