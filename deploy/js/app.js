@@ -191,11 +191,11 @@ Application = (function() {
     this.lowpass = new Filter(this.context, Filter.LOW_PASS, this.mixer.master.input, this.mixer.master.output);
     this.lowpass.toggle(true);
     this.sampler = new Sampler(this.context);
-    this.sampler.add('wav/Nude (Bass Stem).wav');
-    this.sampler.add('wav/Nude (Drum Stem).wav');
-    this.sampler.add('wav/Nude (Guitar Stem).wav');
-    this.sampler.add('wav/Nude (String FX Stem).wav');
-    this.sampler.add('wav/Nude (Voice Stem).wav');
+    this.sampler.add('mp3/Nude (Bass Stem).mp3');
+    this.sampler.add('mp3/Nude (Drum Stem).mp3');
+    this.sampler.add('mp3/Nude (Guitar Stem).mp3');
+    this.sampler.add('mp3/Nude (String FX Stem).mp3');
+    this.sampler.add('mp3/Nude (Voice Stem).mp3');
     window.addEventListener('sampler-load-progress', this.onSamplerLoadProgress, false);
     window.addEventListener('sampler-load-complete', this.onSamplerLoadComplete, false);
     this.init();

@@ -20,11 +20,11 @@ class Application
 
     #adds sampler
     @sampler = new Sampler @context
-    @sampler.add 'wav/Nude (Bass Stem).wav'
-    @sampler.add 'wav/Nude (Drum Stem).wav'
-    @sampler.add 'wav/Nude (Guitar Stem).wav'
-    @sampler.add 'wav/Nude (String FX Stem).wav'
-    @sampler.add 'wav/Nude (Voice Stem).wav'    
+    @sampler.add 'mp3/Nude (Bass Stem).mp3'
+    @sampler.add 'mp3/Nude (Drum Stem).mp3'
+    @sampler.add 'mp3/Nude (Guitar Stem).mp3'
+    @sampler.add 'mp3/Nude (String FX Stem).mp3'
+    @sampler.add 'mp3/Nude (Voice Stem).mp3'    
     
     #TODO: dispatch events from the Sampler instead of the window
     window.addEventListener 'sampler-load-progress', @onSamplerLoadProgress, false
