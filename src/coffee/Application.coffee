@@ -7,8 +7,6 @@ class Application
   sources: []
   isPlaying: false
   constructor: ->
-    console.log 'MPC v.0.0.1'
-
     #sets global AudioContext
     @context = new webkitAudioContext()
 
@@ -41,27 +39,32 @@ class Application
 
     #setup dat gui component
     @gui = new dat.GUI()
-    @gui.add(@, 'log').listen()
+    @gui.add(@, 'log').name('MPC v.0.0.1').listen()
 
     @folder_mixer = @gui.addFolder 'Mixer'
-    @folder_mixer.add(@mixer.channels[0], 'volume', 0, 1).name('Bass').onChange((value)=>@mixer.channels[0].changeVolume(value))
-    @folder_mixer.add(@mixer.channels[1], 'volume', 0, 1).name('Drums').onChange((value)=>@mixer.channels[1].changeVolume(value))
-    @folder_mixer.add(@mixer.channels[2], 'volume', 0, 1).name('Guitar').onChange((value)=>@mixer.channels[2].changeVolume(value))
-    @folder_mixer.add(@mixer.channels[3], 'volume', 0, 1).name('Effects').onChange((value)=>@mixer.channels[3].changeVolume(value))
-    @folder_mixer.add(@mixer.channels[4], 'volume', 0, 1).name('Voice').onChange((value)=>@mixer.channels[4].changeVolume(value))
+    @folder_tracks = @folder_mixer.addFolder 'Tracks'
     
-    @folder_master = @folder_mixer.addFolder 'Master'
-    @filter_folder = @folder_master.addFolder 'Filter'
+    @folder_tracks.add(@mixer.channels[0], 'volume', 0, 1).name('Bass').onChange((value)=>@mixer.channels[0].changeVolume(value))
+    @folder_tracks.add(@mixer.channels[1], 'volume', 0, 1).name('Drums').onChange((value)=>@mixer.channels[1].changeVolume(value))
+    @folder_tracks.add(@mixer.channels[2], 'volume', 0, 1).name('Guitar').onChange((value)=>@mixer.channels[2].changeVolume(value))
+    @folder_tracks.add(@mixer.channels[3], 'volume', 0, 1).name('Effects').onChange((value)=>@mixer.channels[3].changeVolume(value))
+    @folder_tracks.add(@mixer.channels[4], 'volume', 0, 1).name('Voice').onChange((value)=>@mixer.channels[4].changeVolume(value))
+    @folder_tracks.add(@mixer.channels[5], 'volume', 0, 1).name('Track 6').onChange((value)=>@mixer.channels[5].changeVolume(value))
+    @folder_tracks.add(@mixer.channels[6], 'volume', 0, 1).name('Track 7').onChange((value)=>@mixer.channels[6].changeVolume(value))
+    @folder_tracks.add(@mixer.channels[7], 'volume', 0, 1).name('Track 8').onChange((value)=>@mixer.channels[7].changeVolume(value))
 
+    @folder_master = @folder_mixer.addFolder 'Master'
+    @folder_master.add(@mixer.master, 'volume', 0, 1).name('MASTER').onChange((value)=>@mixer.master.changeVolume(value))
+    @folder_master.add(@, 'playAll').name('Play')
+    @folder_master.add(@, 'stopAll').name('Stop')
+
+    @filter_folder = @folder_mixer.addFolder 'Low Pass Filter'
     test =
       q: 0
       frequency: 1
     @filter_folder.add(test, 'q', 0, 1).onChange((value)=>@lowpass.changeQuality(value))
     @filter_folder.add(test, 'frequency', 0, 1).onChange((value)=>@lowpass.changeFrequency(value))
-    @folder_master.add(@mixer.master, 'volume', 0, 1).name('MASTER').onChange((value)=>@mixer.master.changeVolume(value))
-    
-    @gui.add(@, 'playAll').name('Play')
-    @gui.add(@, 'stopAll').name('Stop')
+
 
     #starts loading the samples
     @sampler.load()

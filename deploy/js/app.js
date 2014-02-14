@@ -357,7 +357,6 @@ Application = (function() {
     this.playAll = __bind(this.playAll, this);
     this.onSamplerLoadComplete = __bind(this.onSamplerLoadComplete, this);
     this.onSamplerLoadProgress = __bind(this.onSamplerLoadProgress, this);
-    console.log('MPC v.0.0.1');
     this.context = new webkitAudioContext();
     this.mixer = new Mixer8(this.context);
     this.lowpass = new Filter(this.context, Filter.LOW_PASS, this.mixer.master.input, this.mixer.master.output);
@@ -379,25 +378,40 @@ Application = (function() {
       _this = this;
     document.body.style['pointer-events'] = 'none';
     this.gui = new dat.GUI();
-    this.gui.add(this, 'log').listen();
+    this.gui.add(this, 'log').name('MPC v.0.0.1').listen();
     this.folder_mixer = this.gui.addFolder('Mixer');
-    this.folder_mixer.add(this.mixer.channels[0], 'volume', 0, 1).name('Bass').onChange(function(value) {
+    this.folder_tracks = this.folder_mixer.addFolder('Tracks');
+    this.folder_tracks.add(this.mixer.channels[0], 'volume', 0, 1).name('Bass').onChange(function(value) {
       return _this.mixer.channels[0].changeVolume(value);
     });
-    this.folder_mixer.add(this.mixer.channels[1], 'volume', 0, 1).name('Drums').onChange(function(value) {
+    this.folder_tracks.add(this.mixer.channels[1], 'volume', 0, 1).name('Drums').onChange(function(value) {
       return _this.mixer.channels[1].changeVolume(value);
     });
-    this.folder_mixer.add(this.mixer.channels[2], 'volume', 0, 1).name('Guitar').onChange(function(value) {
+    this.folder_tracks.add(this.mixer.channels[2], 'volume', 0, 1).name('Guitar').onChange(function(value) {
       return _this.mixer.channels[2].changeVolume(value);
     });
-    this.folder_mixer.add(this.mixer.channels[3], 'volume', 0, 1).name('Effects').onChange(function(value) {
+    this.folder_tracks.add(this.mixer.channels[3], 'volume', 0, 1).name('Effects').onChange(function(value) {
       return _this.mixer.channels[3].changeVolume(value);
     });
-    this.folder_mixer.add(this.mixer.channels[4], 'volume', 0, 1).name('Voice').onChange(function(value) {
+    this.folder_tracks.add(this.mixer.channels[4], 'volume', 0, 1).name('Voice').onChange(function(value) {
       return _this.mixer.channels[4].changeVolume(value);
     });
+    this.folder_tracks.add(this.mixer.channels[5], 'volume', 0, 1).name('Track 6').onChange(function(value) {
+      return _this.mixer.channels[5].changeVolume(value);
+    });
+    this.folder_tracks.add(this.mixer.channels[6], 'volume', 0, 1).name('Track 7').onChange(function(value) {
+      return _this.mixer.channels[6].changeVolume(value);
+    });
+    this.folder_tracks.add(this.mixer.channels[7], 'volume', 0, 1).name('Track 8').onChange(function(value) {
+      return _this.mixer.channels[7].changeVolume(value);
+    });
     this.folder_master = this.folder_mixer.addFolder('Master');
-    this.filter_folder = this.folder_master.addFolder('Filter');
+    this.folder_master.add(this.mixer.master, 'volume', 0, 1).name('MASTER').onChange(function(value) {
+      return _this.mixer.master.changeVolume(value);
+    });
+    this.folder_master.add(this, 'playAll').name('Play');
+    this.folder_master.add(this, 'stopAll').name('Stop');
+    this.filter_folder = this.folder_mixer.addFolder('Low Pass Filter');
     test = {
       q: 0,
       frequency: 1
@@ -408,11 +422,6 @@ Application = (function() {
     this.filter_folder.add(test, 'frequency', 0, 1).onChange(function(value) {
       return _this.lowpass.changeFrequency(value);
     });
-    this.folder_master.add(this.mixer.master, 'volume', 0, 1).name('MASTER').onChange(function(value) {
-      return _this.mixer.master.changeVolume(value);
-    });
-    this.gui.add(this, 'playAll').name('Play');
-    this.gui.add(this, 'stopAll').name('Stop');
     return this.sampler.load();
   };
 
