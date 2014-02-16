@@ -2,7 +2,7 @@
 WebAudio API MPC prototype
 
 #### Examples
-[![Example](http://andrevenancio.github.com/MPC/deploy/preview.png)](http://andrevenancio.github.com/MPC/deploy/index.html)
+[![Example](http://andrevenancio.github.com/MPC/deploy/preview.png)](http://andrevenancio.github.com/MPC/deploy/)
 
 ## Sampler
 A sampler loads and stores external audio files in buffers so they can be attached to a audio context. It dispatches progress and complete loading events.
