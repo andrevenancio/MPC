@@ -13,10 +13,6 @@ class Application
     #adds a mixer with 8 channels
     @mixer = new Mixer8 @context
 
-    #adds a low-pass filter to the master channel of the mixer
-    @lowpass = new Filter @context, Filter.LOW_PASS, @mixer.master.input, @mixer.master.output
-    @lowpass.toggle true
-
     #adds sampler
     @sampler = new Sampler @context
     @sampler.add 'mp3/Nude (Bass Stem).mp3'
@@ -49,22 +45,11 @@ class Application
     @folder_tracks.add(@mixer.channels[2], 'volume', 0, 1).name('Guitar').onChange((value)=>@mixer.channels[2].changeVolume(value))
     @folder_tracks.add(@mixer.channels[3], 'volume', 0, 1).name('Effects').onChange((value)=>@mixer.channels[3].changeVolume(value))
     @folder_tracks.add(@mixer.channels[4], 'volume', 0, 1).name('Voice').onChange((value)=>@mixer.channels[4].changeVolume(value))
-    @folder_tracks.add(@mixer.channels[5], 'volume', 0, 1).name('Track 6').onChange((value)=>@mixer.channels[5].changeVolume(value))
-    @folder_tracks.add(@mixer.channels[6], 'volume', 0, 1).name('Track 7').onChange((value)=>@mixer.channels[6].changeVolume(value))
-    @folder_tracks.add(@mixer.channels[7], 'volume', 0, 1).name('Track 8').onChange((value)=>@mixer.channels[7].changeVolume(value))
 
     @folder_master = @folder_mixer.addFolder 'Master'
     @folder_master.add(@mixer.master, 'volume', 0, 1).name('MASTER').onChange((value)=>@mixer.master.changeVolume(value))
     @folder_master.add(@, 'playAll').name('Play')
     @folder_master.add(@, 'stopAll').name('Stop')
-
-    @filter_folder = @folder_mixer.addFolder 'Low Pass Filter'
-    test =
-      q: 0
-      frequency: 1
-    @filter_folder.add(test, 'q', 0, 1).onChange((value)=>@lowpass.changeQuality(value))
-    @filter_folder.add(test, 'frequency', 0, 1).onChange((value)=>@lowpass.changeFrequency(value))
-
 
     #starts loading the samples
     @sampler.load()
@@ -76,6 +61,9 @@ class Application
   onSamplerLoadComplete: (e) =>
     @log = 'All samples Loaded'
     document.body.style['pointer-events'] = 'auto'
+
+    @folder_mixer.open()
+    @folder_master.open()
     null
 
   playAll: =>
