@@ -4,7 +4,7 @@ class Circle
     x: 0
     y: 0
   points: []
-  constructor: (context, octaves = 20, radius = 0) ->
+  constructor: (context, octaves = 6, radius = 0) ->
     @context = context
     @octaves = octaves
     @radius = radius
@@ -24,7 +24,7 @@ class Circle
     @getOctavesPosition()
 
     #generate control points for quadratic bezier based on points
-    newPoints = MathUtils.calculateControlPoints @points, 0.25
+    newPoints = MathUtils.calculateControlPoints @points, 0.5
 
     #CUBIC BEZIER
     a = 0

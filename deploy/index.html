@@ -10,11 +10,37 @@
     <meta property="og:image" content="http://andrevenancio.github.io/MPC/deploy/preview.png"/>
     <meta property="og:site_name" content="MPC Prototype"/>
     <meta property="og:description" content="WebAudio API MPC prototype"/>
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js"></script>
     <script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="js/signals.1.0.0.min.js"></script>
   </head>
   <body>
+    <canvas id="canvas"></canvas>
+    <div id="pads">
+      <div id="pad-A" class="pad enable"><span>A</span></div>
+      <div id="pad-S" class="pad enable"><span>S</span></div>
+      <div id="pad-D" class="pad enable"><span>D</span></div>
+      <div id="pad-F" class="pad enable"><span>F</span></div>
+      <div id="pad-G" class="pad enable"><span>G</span></div>
+    </div>
+
+    <div id="more-info">
+      <div>
+        <strong>A</strong> Drums<br/>
+        <strong>S</strong> Bass<br/>
+        <strong>D</strong> Guitar<br/>
+        <strong>F</strong> Effects<br/>
+        <strong>G</strong> Voice<br/>
+      </div>
+    </div>
+
+    <div id="controls">
+      <div id="info" class="controls"><span><i class="fa fa-info"></i></span></div>
+      <div id="playback" class="controls enable"><span><i class="fa"></i></span></div>
+    </div>
+
     <script type="text/javascript" src="js/app.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
   </body>

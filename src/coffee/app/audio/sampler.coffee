@@ -6,6 +6,10 @@ class Sampler
       buffers: []
       sources: []
 
+    @signals = {}
+    @signals.progress = new signals.Signal()
+    @signals.complete = new signals.Signal()
+
   #adds file to sampler
   add: (url) ->
     @memory.files.push url
@@ -32,16 +36,12 @@ class Sampler
           @memory.buffers[url] = buffer
 
           #fires progress event
-          progress = Object.keys(@memory.buffers).length
-          total = @memory.files.length
-          window.dispatchEvent new CustomEvent 'sampler-load-progress',
-            detail:
-              progress: progress
-              total: total
+          @signals.progress.dispatch 'progress', { 'progress': Object.keys(@memory.buffers).length, 'total': @memory.files.length }
 
           #if the latest buffer was loaded, dispatch callback
           if Object.keys(@memory.buffers).length is @memory.files.length
-            window.dispatchEvent new CustomEvent('sampler-load-complete')
+            #fires complete event
+            @signals.complete.dispatch 'complete', {}
           null
         , (error) ->
           console.error 'decode error', error
