@@ -201,7 +201,7 @@ Visualizer = (function() {
 
   Visualizer.prototype.analyzers = [];
 
-  Visualizer.prototype.precision = 0.07;
+  Visualizer.prototype.precision = 0.25;
 
   function Visualizer(mixer, colors) {
     this.render = __bind(this.render, this);

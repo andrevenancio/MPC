@@ -7,7 +7,7 @@ class Visualizer
   playing: false
   circles: []
   analyzers: []
-  precision: 0.07
+  precision: 0.25
   constructor: (mixer, colors) ->
     @canvas = document.createElement 'canvas'
     @context = @canvas.getContext '2d'
