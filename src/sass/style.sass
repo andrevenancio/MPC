@@ -19,8 +19,7 @@ body
 canvas
   display: block
 
-.pad,
-.controls
+.pad
   position: relative
   display: table
   float: left
@@ -29,8 +28,8 @@ canvas
   border: 1px solid #666
   color: #666
   box-sizing: border-box
-  border-radius: 10px
-  margin: 10px
+  border-radius: 8px
+  margin: 1px
   cursor: pointer
 
   span
@@ -39,10 +38,11 @@ canvas
     text-align: center
     @include font
 
+  div
+    color: #333
+
 .pad:hover,
-.controls:hover,
-.pad.enable,
-.controls.enable
+.pad.enable
   border: 1px solid cyan
   box-shadow: 0px 0px 14px cyan
   color: cyan
@@ -52,8 +52,9 @@ canvas
 
 #pads
   position: absolute
-  bottom: 20px
-  left: 20px
+  top: 20px
+  right: 20px
+  @include font
 
 #controls
   position: absolute
@@ -74,4 +75,3 @@ canvas
     vertical-align: middle
     text-align: center
     @include font
-

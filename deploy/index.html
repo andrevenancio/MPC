@@ -15,15 +15,27 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js"></script>
     <script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
     <script src="js/signals.1.0.0.min.js"></script>
+    <!--<script src="http://localhost:8080/socket.io/socket.io.js"></script>-->
   </head>
   <body>
-    <canvas id="canvas"></canvas>
+
     <div id="pads">
-      <div id="pad-A" class="pad enable"><span>A</span></div>
-      <div id="pad-S" class="pad enable"><span>S</span></div>
-      <div id="pad-D" class="pad enable"><span>D</span></div>
-      <div id="pad-F" class="pad enable"><span>F</span></div>
-      <div id="pad-G" class="pad enable"><span>G</span></div>
+      <fieldset>
+        <legend>Pad</legend>
+        <div id="loop-0" class="pad"><span>1<div></div></span></div>
+        <div id="loop-1" class="pad"><span>2<div></div></span></div>
+        <div id="loop-2" class="pad"><span>3<div></div></span></div>
+        <div id="loop-3" class="pad"><span>4<div></div></span></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Loops</legend>
+        <div id="loop-A" class="pad"><span>A<div>drums</div></span></div>
+        <div id="loop-S" class="pad"><span>S<div>bass</div></span></div>
+        <div id="loop-D" class="pad"><span>D<div>guitar</div></span></div>
+        <div id="loop-F" class="pad"><span>F<div>fx</div></span></div>
+        <div id="loop-G" class="pad"><span>G<div>voice</div></span></div>
+      </fieldset>
     </div>
 
     <div id="more-info">
@@ -37,8 +49,8 @@
     </div>
 
     <div id="controls">
-      <div id="info" class="controls"><span><i class="fa fa-info"></i></span></div>
-      <div id="playback" class="controls enable"><span><i class="fa"></i></span></div>
+      <div id="info" class="pad"><span><i class="fa fa-info"></i></span></div>
+      <div id="playback" class="pad enable"><span><i class="fa"></i></span></div>
     </div>
 
     <script type="text/javascript" src="js/app.js"></script>

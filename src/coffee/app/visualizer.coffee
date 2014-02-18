@@ -8,11 +8,11 @@ class Visualizer
 
   enableControls: ->
     #pads
-    $('#pad-A').bind 'click touchstart', @handleClickTouch
-    $('#pad-S').bind 'click touchstart', @handleClickTouch
-    $('#pad-D').bind 'click touchstart', @handleClickTouch
-    $('#pad-F').bind 'click touchstart', @handleClickTouch
-    $('#pad-G').bind 'click touchstart', @handleClickTouch
+    $('#loop-A').bind 'click touchstart', @handleClickTouch
+    $('#loop-S').bind 'click touchstart', @handleClickTouch
+    $('#loop-D').bind 'click touchstart', @handleClickTouch
+    $('#loop-F').bind 'click touchstart', @handleClickTouch
+    $('#loop-G').bind 'click touchstart', @handleClickTouch
 
     #controls
     $('#info').bind 'click touchstart', @toggleInfo
@@ -37,7 +37,7 @@ class Visualizer
     null
 
   handleKey: (key) =>
-    target = $('#pad-' + key)
+    target = $('#loop-' + key)
 
     #maps letters to mixing channels
     maps = []
