@@ -14,20 +14,21 @@ canvas {
   display: block;
 }
 
-.pad {
+.pad,
+.playback {
   position: relative;
   display: table;
   float: left;
   width: 50px;
   height: 50px;
-  border: 1px solid #666666;
   color: #666666;
   box-sizing: border-box;
   border-radius: 8px;
   margin: 1px;
   cursor: pointer;
 }
-.pad span {
+.pad span,
+.playback span {
   display: table-cell;
   vertical-align: middle;
   text-align: center;
@@ -35,19 +36,15 @@ canvas {
   color: #666666;
   -webkit-font-smoothing: antialiased;
   font-family: sans-serif;
+  color: #cccccc;
 }
-.pad div {
+.pad div,
+.playback div {
   color: #333333;
 }
 
-.pad:hover,
-.pad.enable {
+.playback {
   border: 1px solid cyan;
-  box-shadow: 0px 0px 14px cyan;
-  color: cyan;
-}
-.pad:hover span,
-.pad.enable span {
   color: cyan;
 }
 

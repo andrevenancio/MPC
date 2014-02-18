@@ -7,8 +7,8 @@ class Visualizer
   playing: false
   circles: []
   analyzers: []
-  precision: 0.25
-  constructor: (mixer, colors) ->
+  precision: 0.03
+  constructor: (mixer) ->
     @canvas = document.createElement 'canvas'
     @context = @canvas.getContext '2d'
     document.body.appendChild @canvas
@@ -16,19 +16,11 @@ class Visualizer
     window.addEventListener 'resize', @resize, false
     #source for our audio analysis
     @mixer = mixer
-    @colors = colors
     @init()
 
   init: ->
-    for i in [0...@mixer.channels.length]
-      color = ''
-      switch i
-        when 1 then color = @colors.drums
-        when 2 then color = @colors.bass
-        when 3 then color = @colors.guitar
-        when 4 then color = @colors.effects
-        when 5 then color = @colors.voice
-      @circles.push new Circle @context, 6, 150, color
+    for i in [0...5]
+      @circles.push new Circle @context
       @analyzers.push new Analizer @mixer.channels[i].input
 
     @handleState Visualizer.WAIT
@@ -90,6 +82,7 @@ class Visualizer
 
     #toggle state
     target.toggleClass 'enable'
+
     if target.hasClass 'enable'
       Application.STAGE.mixer.dispatch maps[key], 1
     else

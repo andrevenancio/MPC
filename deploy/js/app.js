@@ -201,9 +201,9 @@ Visualizer = (function() {
 
   Visualizer.prototype.analyzers = [];
 
-  Visualizer.prototype.precision = 0.25;
+  Visualizer.prototype.precision = 0.03;
 
-  function Visualizer(mixer, colors) {
+  function Visualizer(mixer) {
     this.render = __bind(this.render, this);
     this.togglePlayback = __bind(this.togglePlayback, this);
     this.toggleInfo = __bind(this.toggleInfo, this);
@@ -216,31 +216,13 @@ Visualizer = (function() {
     document.body.appendChild(this.canvas);
     window.addEventListener('resize', this.resize, false);
     this.mixer = mixer;
-    this.colors = colors;
     this.init();
   }
 
   Visualizer.prototype.init = function() {
-    var color, i, _i, _ref;
-    for (i = _i = 0, _ref = this.mixer.channels.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-      color = '';
-      switch (i) {
-        case 1:
-          color = this.colors.drums;
-          break;
-        case 2:
-          color = this.colors.bass;
-          break;
-        case 3:
-          color = this.colors.guitar;
-          break;
-        case 4:
-          color = this.colors.effects;
-          break;
-        case 5:
-          color = this.colors.voice;
-      }
-      this.circles.push(new Circle(this.context, 6, 150, color));
+    var i, _i;
+    for (i = _i = 0; _i < 5; i = ++_i) {
+      this.circles.push(new Circle(this.context));
       this.analyzers.push(new Analizer(this.mixer.channels[i].input));
     }
     this.handleState(Visualizer.WAIT);
@@ -564,14 +546,14 @@ Application = (function() {
   function Application() {
     this.onMixer = __bind(this.onMixer, this);
     this.onPlayback = __bind(this.onPlayback, this);
-    var colors, gui,
+    var color, colors, gui, i, _i,
       _this = this;
     this.colors = {
-      drums: '#04BFB5',
-      bass: '#037F79',
-      guitar: '#05FFF2',
-      effects: '#01403C',
-      voice: '#05E5D9'
+      drums: '#ff0000',
+      bass: '#6d89e3',
+      guitar: '#a2e368',
+      effects: '#00afa3',
+      voice: '#ffffff'
     };
     Application.STAGE.playback = new signals.Signal();
     Application.STAGE.playback.add(this.onPlayback);
@@ -598,11 +580,66 @@ Application = (function() {
       return _this.changeColor(4, value);
     });
     colors.add(this.visualizer, 'precision', 0, 1).step(0.01).name('motion blur');
+    for (i = _i = 0; _i < 5; i = ++_i) {
+      color = this.transformIndexIntoColor(i);
+      this.changeColor(i, color);
+    }
   }
 
   Application.prototype.changeColor = function(index, color) {
+    var id;
     this.visualizer.circles[index].color = color;
+    id = this.transformIndexIntoId(index);
+    $(id).css({
+      'border': '1px solid ' + color,
+      'box-shadow': '0px 0px 14px ' + color,
+      'color': color
+    });
     return null;
+  };
+
+  Application.prototype.transformIndexIntoColor = function(index) {
+    var color;
+    color = '';
+    switch (index) {
+      case 0:
+        color = this.colors.drums;
+        break;
+      case 1:
+        color = this.colors.bass;
+        break;
+      case 2:
+        color = this.colors.guitar;
+        break;
+      case 3:
+        color = this.colors.effects;
+        break;
+      case 4:
+        color = this.colors.voice;
+    }
+    return color;
+  };
+
+  Application.prototype.transformIndexIntoId = function(index) {
+    var id;
+    id = '';
+    switch (index) {
+      case 0:
+        id = '#loop-A';
+        break;
+      case 1:
+        id = '#loop-S';
+        break;
+      case 2:
+        id = '#loop-D';
+        break;
+      case 3:
+        id = '#loop-F';
+        break;
+      case 4:
+        id = '#loop-G';
+    }
+    return id;
   };
 
   Application.prototype.onPlayback = function(value) {
@@ -621,7 +658,22 @@ Application = (function() {
   };
 
   Application.prototype.onMixer = function(track, value) {
+    var color, id, target;
     this.audio.mixer.channels[track].changeVolume(value);
+    id = this.transformIndexIntoId(track);
+    color = this.transformIndexIntoColor(track);
+    target = $(id);
+    if (!target.hasClass('enable')) {
+      target.css({
+        'border': '1px solid #666',
+        'box-shadow': 'none'
+      });
+    } else {
+      target.css({
+        'border': '1px solid ' + color,
+        'box-shadow': '0px 0px 14px ' + color
+      });
+    }
     return null;
   };
 

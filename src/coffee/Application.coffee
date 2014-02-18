@@ -4,11 +4,11 @@ class Application
   @STAGE: {}
   constructor: ->
     @colors =
-      drums: '#04BFB5'
-      bass: '#037F79'
-      guitar: '#05FFF2'
-      effects: '#01403C'
-      voice: '#05E5D9'
+      drums: '#ff0000'
+      bass: '#6d89e3'
+      guitar: '#a2e368'
+      effects: '#00afa3'
+      voice: '#ffffff'
 
     Application.STAGE.playback = new signals.Signal()
     Application.STAGE.playback.add @onPlayback
@@ -29,11 +29,44 @@ class Application
     colors.addColor(@colors, 'voice').onChange((value)=>@changeColor 4, value)
     colors.add(@visualizer, 'precision', 0, 1).step(0.01).name('motion blur')
 
+    for i in [0...5]
+      color = @transformIndexIntoColor i
+      @changeColor i, color
+
 
   changeColor: (index, color) ->
+    #change circle colors
     @visualizer.circles[index].color = color
+    #change button colors
+
+    id = @transformIndexIntoId index
+
+    $(id).css {
+      'border': '1px solid ' + color,
+      'box-shadow': '0px 0px 14px ' + color,
+      'color': color
+    }
     null
 
+  transformIndexIntoColor: (index) ->
+    color = ''
+    switch index
+      when 0 then color = @colors.drums
+      when 1 then color = @colors.bass
+      when 2 then color = @colors.guitar
+      when 3 then color = @colors.effects
+      when 4 then color = @colors.voice
+    return color
+
+  transformIndexIntoId: (index) ->
+    id = ''
+    switch index
+      when 0 then id = '#loop-A'
+      when 1 then id = '#loop-S'
+      when 2 then id = '#loop-D'
+      when 3 then id = '#loop-F'
+      when 4 then id = '#loop-G'
+    return id
 
   #handles Audio playback (READY/PLAY/STOP)
   onPlayback: (value) =>
@@ -49,4 +82,18 @@ class Application
   #on mute/unmute track
   onMixer: (track, value) =>
     @audio.mixer.channels[track].changeVolume value
+
+    id = @transformIndexIntoId track
+    color = @transformIndexIntoColor track
+    target = $(id)
+    if not target.hasClass 'enable'
+      target.css {
+        'border': '1px solid #666',
+        'box-shadow': 'none'
+      }
+    else
+      target.css {
+        'border': '1px solid ' + color,
+        'box-shadow': '0px 0px 14px ' + color
+      }
     null
