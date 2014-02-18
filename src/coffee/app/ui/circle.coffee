@@ -4,12 +4,12 @@ class Circle
     x: 0
     y: 0
   points: []
-  constructor: (context, octaves = 6, radius = 0) ->
+  constructor: (context, octaves = 6, radius = 150, color = '#0FF') ->
     @context = context
     @octaves = octaves
     @radius = radius
     @indexes = new Float32Array @octaves
-    @color = '#'+Math.floor(Math.random()*16777215).toString(16)
+    @color = color#'#'+Math.floor(Math.random()*16777215).toString(16)
     
   translate: (x, y) ->
     @position.x = x

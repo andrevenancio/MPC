@@ -1,10 +1,51 @@
+#import app.ui.Circle
+#import app.audio.Analizer
 class Visualizer
-  playing: false
   @WAIT: 'fa-spinner fa-spin'
   @STOP: 'fa-stop'
   @PLAY: 'fa-play'
-  constructor: () ->
+  playing: false
+  circles: []
+  analyzers: []
+  precision: 0.07
+  constructor: (mixer, colors) ->
+    @canvas = document.createElement 'canvas'
+    @context = @canvas.getContext '2d'
+    document.body.appendChild @canvas
+
+    window.addEventListener 'resize', @resize, false
+    #source for our audio analysis
+    @mixer = mixer
+    @colors = colors
+    @init()
+
+  init: ->
+    for i in [0...@mixer.channels.length]
+      color = ''
+      switch i
+        when 1 then color = @colors.drums
+        when 2 then color = @colors.bass
+        when 3 then color = @colors.guitar
+        when 4 then color = @colors.effects
+        when 5 then color = @colors.voice
+      @circles.push new Circle @context, 6, 150, color
+      @analyzers.push new Analizer @mixer.channels[i].input
+
     @handleState Visualizer.WAIT
+    @resize()
+    @render()
+    null
+
+  resize: (e) =>
+    @width = window.innerWidth
+    @height = window.innerHeight
+    @canvas.width = @width
+    @canvas.height = @height
+
+    #always keeps circles at the center
+    for i in [0...@circles.length]
+      @circles[i].translate @width/2, @height/2
+    null
 
   enableControls: ->
     #pads
@@ -33,7 +74,7 @@ class Visualizer
     null
 
   handleClickTouch: (e) =>
-    @handleKey $(e.currentTarget).find('span').text()
+    @handleKey $(e.currentTarget)[0].id.split('-')[1]
     null
 
   handleKey: (key) =>
@@ -81,4 +122,24 @@ class Visualizer
       Application.STAGE.playback.dispatch 'stop'
     else if state is Visualizer.PLAY
       Application.STAGE.playback.dispatch 'play'
+    null
+
+
+  render: =>
+    #cleans canvas
+    #@context.clearRect 0, 0, @width, @height
+    
+    #motion blur effect
+    @context.fillStyle = 'rgba(0,0,0,' + @precision + ')';
+    @context.fillRect 0, 0, @width, @height
+
+    for i in [0...@circles.length]
+      circle = @circles[i]
+      value = @analyzers[i].octaves circle.octaves
+      #feed analizes into circle
+      for j in [0...circle.octaves]
+        circle.feed j, value[j]
+
+      circle.draw()
+    requestAnimationFrame @render
     null
