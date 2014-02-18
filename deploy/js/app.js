@@ -342,9 +342,9 @@ Visualizer = (function() {
     $('#playback span i').removeClass(Visualizer.STOP);
     $('#playback span i').removeClass(Visualizer.PLAY);
     $('#playback span i').addClass(state);
-    if (state === Visualizer.STOP) {
+    if (state === Visualizer.PLAY) {
       Application.STAGE.playback.dispatch('stop');
-    } else if (state === Visualizer.PLAY) {
+    } else if (state === Visualizer.STOP) {
       Application.STAGE.playback.dispatch('play');
     }
     return null;

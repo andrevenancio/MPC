@@ -118,9 +118,9 @@ class Visualizer
 
     $('#playback span i').addClass state
 
-    if state is Visualizer.STOP
+    if state is Visualizer.PLAY
       Application.STAGE.playback.dispatch 'stop'
-    else if state is Visualizer.PLAY
+    else if state is Visualizer.STOP
       Application.STAGE.playback.dispatch 'play'
     null
 
