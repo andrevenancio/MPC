@@ -8,6 +8,7 @@ class Visualizer
   circles: []
   analyzers: []
   precision: 0.03
+  background: [0,0,0]
   constructor: (mixer) ->
     @canvas = document.createElement 'canvas'
     @context = @canvas.getContext '2d'
@@ -121,10 +122,13 @@ class Visualizer
   render: =>
     #cleans canvas
     #@context.clearRect 0, 0, @width, @height
-    
+
+    #console.log('rgba(' + Math.round(@background[0]) + ',' + Math.round(@background[1]) + ',' + Math.round(@background[2]) + ', ' + @precision + ')');
     #motion blur effect
-    @context.fillStyle = 'rgba(0,0,0,' + @precision + ')';
+    @context.beginPath()
+    @context.fillStyle = 'rgba(' + Math.round(@background[0]) + ',' + Math.round(@background[1]) + ',' + Math.round(@background[2]) + ', ' + @precision + ')';
     @context.fillRect 0, 0, @width, @height
+    @context.closePath()
 
     for i in [0...@circles.length]
       circle = @circles[i]

@@ -27,6 +27,7 @@ class Application
     colors.addColor(@colors, 'guitar').onChange((value)=>@changeColor 2, value)
     colors.addColor(@colors, 'effects').onChange((value)=>@changeColor 3, value)
     colors.addColor(@colors, 'voice').onChange((value)=>@changeColor 4, value)
+    colors.addColor @visualizer, 'background'
     colors.add(@visualizer, 'precision', 0, 1).step(0.01).name('motion blur')
 
     for i in [0...5]

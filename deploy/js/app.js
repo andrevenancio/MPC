@@ -203,6 +203,8 @@ Visualizer = (function() {
 
   Visualizer.prototype.precision = 0.03;
 
+  Visualizer.prototype.background = [0, 0, 0];
+
   function Visualizer(mixer) {
     this.render = __bind(this.render, this);
     this.togglePlayback = __bind(this.togglePlayback, this);
@@ -334,8 +336,10 @@ Visualizer = (function() {
 
   Visualizer.prototype.render = function() {
     var circle, i, j, value, _i, _j, _ref, _ref1;
-    this.context.fillStyle = 'rgba(0,0,0,' + this.precision + ')';
+    this.context.beginPath();
+    this.context.fillStyle = 'rgba(' + Math.round(this.background[0]) + ',' + Math.round(this.background[1]) + ',' + Math.round(this.background[2]) + ', ' + this.precision + ')';
     this.context.fillRect(0, 0, this.width, this.height);
+    this.context.closePath();
     for (i = _i = 0, _ref = this.circles.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
       circle = this.circles[i];
       value = this.analyzers[i].octaves(circle.octaves);
@@ -579,6 +583,7 @@ Application = (function() {
     colors.addColor(this.colors, 'voice').onChange(function(value) {
       return _this.changeColor(4, value);
     });
+    colors.addColor(this.visualizer, 'background');
     colors.add(this.visualizer, 'precision', 0, 1).step(0.01).name('motion blur');
     for (i = _i = 0; _i < 5; i = ++_i) {
       color = this.transformIndexIntoColor(i);
