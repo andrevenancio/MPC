@@ -17,6 +17,7 @@ class Visualizer
     window.addEventListener 'resize', @resize, false
     #source for our audio analysis
     @mixer = mixer
+
     @init()
 
   init: ->

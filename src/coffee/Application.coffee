@@ -34,7 +34,6 @@ class Application
       color = @transformIndexIntoColor i
       @changeColor i, color
 
-
   changeColor: (index, color) ->
     #change circle colors
     @visualizer.circles[index].color = color
