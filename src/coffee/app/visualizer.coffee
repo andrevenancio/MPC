@@ -7,7 +7,7 @@ class Visualizer
   playing: false
   circles: []
   analyzers: []
-  precision: 0.03
+  precision: 0.11
   background: [0,0,0]
   constructor: (mixer) ->
     @canvas = document.createElement 'canvas'
@@ -41,64 +41,12 @@ class Visualizer
       @circles[i].translate @width/2, @height/2
     null
 
-  enableControls: ->
-    #pads
-    $('#loop-A').bind 'click touchstart', @handleClickTouch
-    $('#loop-S').bind 'click touchstart', @handleClickTouch
-    $('#loop-D').bind 'click touchstart', @handleClickTouch
-    $('#loop-F').bind 'click touchstart', @handleClickTouch
-    $('#loop-G').bind 'click touchstart', @handleClickTouch
-
-    #controls
-    $('#info').bind 'click touchstart', @toggleInfo
-    $('#playback').bind 'click touchstart', @togglePlayback
-
-    window.addEventListener 'keydown', @handleKeyDown
-    null
-
-  handleKeyDown: (e) =>
-    #console.log e.keyCode
-    switch e.keyCode
-      when 65 then @handleKey 'A'
-      when 83 then @handleKey 'S'
-      when 68 then @handleKey 'D'
-      when 70 then @handleKey 'F'
-      when 71 then @handleKey 'G'
-      when 32 then @togglePlayback()
-    null
-
-  handleClickTouch: (e) =>
-    @handleKey $(e.currentTarget)[0].id.split('-')[1]
-    null
-
-  handleKey: (key) =>
-    target = $('#loop-' + key)
-
-    #maps letters to mixing channels
-    maps = []
-    maps['A'] = 0
-    maps['S'] = 1
-    maps['D'] = 2
-    maps['F'] = 3
-    maps['G'] = 4
-
-    #toggle state
-    target.toggleClass 'enable'
-
-    if target.hasClass 'enable'
-      Application.STAGE.mixer.dispatch maps[key], 1
-    else
-      Application.STAGE.mixer.dispatch maps[key], 0
-    null
-
-  toggleInfo: (e) =>
-    $('#info').toggleClass 'enable'
-
-    if $('#info').hasClass 'enable'
-      $('#more-info').show().css { 'display': 'table'}
-    else
+  toggleInfo: ->
+    $('#info').toggleClass 'disable'
+    if $('#info').hasClass 'disable'
       $('#more-info').hide()
-
+    else
+      $('#more-info').show().css { 'display': 'table'}
     null
 
   togglePlayback: (e) =>
@@ -107,35 +55,28 @@ class Visualizer
     null
 
   handleState: (state) ->
-    $('#playback span i').removeClass Visualizer.WAIT
-    $('#playback span i').removeClass Visualizer.STOP
-    $('#playback span i').removeClass Visualizer.PLAY
-
-    $('#playback span i').addClass state
-
     if state is Visualizer.PLAY
       Application.STAGE.playback.dispatch 'stop'
     else if state is Visualizer.STOP
       Application.STAGE.playback.dispatch 'play'
     null
 
-
   render: =>
-    #cleans canvas
-    #@context.clearRect 0, 0, @width, @height
-
-    #console.log('rgba(' + Math.round(@background[0]) + ',' + Math.round(@background[1]) + ',' + Math.round(@background[2]) + ', ' + @precision + ')');
-    #motion blur effect
-    @context.beginPath()
-    @context.fillStyle = 'rgba(' + Math.round(@background[0]) + ',' + Math.round(@background[1]) + ',' + Math.round(@background[2]) + ', ' + @precision + ')';
-    @context.fillRect 0, 0, @width, @height
-    @context.closePath()
+    alpha = if Circle.debug is true then 1 else @precision
+    
+    if alpha is 1
+      @context.clearRect 0, 0, @width, @height
+    else
+      @context.beginPath()
+      @context.fillStyle = 'rgba(' + Math.round(@background[0]) + ',' + Math.round(@background[1]) + ',' + Math.round(@background[2]) + ', ' + alpha + ')';
+      @context.fillRect 0, 0, @width, @height
+      @context.closePath()
 
     for i in [0...@circles.length]
       circle = @circles[i]
-      value = @analyzers[i].octaves circle.octaves
+      value = @analyzers[i].octaves Circle.octaves
       #feed analizes into circle
-      for j in [0...circle.octaves]
+      for j in [0...Circle.octaves]
         circle.feed j, value[j]
 
       circle.draw()

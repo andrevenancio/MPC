@@ -13,54 +13,11 @@ html
 
 body
   margin: 0
-  background-color: #FFF
+  background-color: #000
   @include fullscreen
 
 canvas
   display: block
-
-.pad,
-.playback
-  position: relative
-  display: table
-  float: left
-  width: 50px
-  height: 50px
-  color: #666
-  box-sizing: border-box
-  border-radius: 8px
-  margin: 1px
-  cursor: pointer
-
-  span
-    display: table-cell
-    vertical-align: middle
-    text-align: center
-    @include font
-    color: #ccc
-
-  div
-    color: #333
-
-.playback
-  border: 1px solid cyan
-  color: cyan
-
-  span
-    cyan
-
-
-
-#pads
-  position: absolute
-  bottom: 20px
-  left: 20px
-  @include font
-
-#controls
-  position: absolute
-  bottom: 20px
-  right: 20px
 
 #more-info
   @include font
@@ -78,3 +35,12 @@ canvas
     vertical-align: middle
     text-align: center
     @include font
+
+.ce
+  position: absolute
+  bottom: 0
+  left: 0
+.gh
+  position: absolute
+  top: 0
+  left: 0

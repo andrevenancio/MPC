@@ -3,10 +3,75 @@ var Analizer, Application, Audio, Circle, Fader, MathUtils, Mixer8, Sampler, Vec
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 Vec2 = (function() {
+  Vec2.magnitude = function(vector) {
+    return Math.sqrt(vector.x * vector.x + vector.y * vector.y);
+  };
+
+  Vec2.magnitudeSq = function(vector) {
+    return vector.x * vector.x + vector.y * vector.y;
+  };
+
   function Vec2(x, y) {
     this.x = x != null ? x : 0;
     this.y = y != null ? y : 0;
   }
+
+  Vec2.prototype.normalize = function() {
+    var len;
+    len = Vec2.magnitude(this);
+    if (len > 0.00001) {
+      this.x = this.x / len;
+      this.y = this.y / len;
+    } else {
+      this.x = 0;
+      this.y = 0;
+    }
+    return this;
+  };
+
+  Vec2.prototype.subtract = function(vector) {
+    this.x -= vector.x;
+    this.y -= vector.y;
+    return this;
+  };
+
+  Vec2.prototype.add = function(vector) {
+    this.x += vector.x;
+    this.y += vector.y;
+    return this;
+  };
+
+  Vec2.prototype.multiply = function(v) {
+    if (v instanceof Vec2) {
+      this.x *= v.x;
+      this.y *= v.y;
+    } else {
+      this.x *= v;
+      this.y *= v;
+    }
+    return this;
+  };
+
+  Vec2.prototype.divide = function(v) {
+    if (v instanceof Vec2) {
+      this.x /= v.x;
+      this.y /= v.y;
+    } else {
+      this.x /= v;
+      this.y /= v;
+    }
+    return this;
+  };
+
+  Vec2.prototype.limit = function(max) {
+    var mag;
+    mag = Vec2.magnitudeSq(this);
+    if (mag > max * max) {
+      this.normalize();
+      this.multiply(max);
+    }
+    return this;
+  };
 
   return Vec2;
 
@@ -51,17 +116,17 @@ MathUtils = (function() {
 })();
 
 Circle = (function() {
-  Circle.prototype.position = {
-    x: 0,
-    y: 0
-  };
+  Circle.prototype.position = new Vec2();
 
   Circle.prototype.points = [];
 
-  function Circle(context, octaves, radius, color) {
-    if (octaves == null) {
-      octaves = 6;
-    }
+  Circle.factor = 0.5;
+
+  Circle.octaves = 6;
+
+  Circle.debug = false;
+
+  function Circle(context, radius, color) {
     if (radius == null) {
       radius = 150;
     }
@@ -69,9 +134,8 @@ Circle = (function() {
       color = '#0FF';
     }
     this.context = context;
-    this.octaves = octaves;
     this.radius = radius;
-    this.indexes = new Float32Array(this.octaves);
+    this.indexes = new Float32Array(20);
     this.color = color;
   }
 
@@ -87,9 +151,9 @@ Circle = (function() {
   };
 
   Circle.prototype.draw = function() {
-    var a, b, c, d, i, newPoints, _i, _ref;
+    var a, b, c, d, i, j, newPoints, _i, _j, _k, _ref, _ref1, _ref2;
     this.getOctavesPosition();
-    newPoints = MathUtils.calculateControlPoints(this.points, 0.5);
+    newPoints = MathUtils.calculateControlPoints(this.points, Circle.factor);
     a = 0;
     b = 0;
     this.context.beginPath();
@@ -105,37 +169,33 @@ Circle = (function() {
     this.context.lineWidth = 1;
     this.context.stroke();
     this.context.closePath();
-    /* DEBUG POINTS*/
-
-    /*
-    for j in [0...newPoints.length]
-      @context.beginPath()
-      @context.arc(newPoints[j].x, newPoints[j].y, 1, 0, 2 * Math.PI, false)
-      @context.fillStyle = 'green'
-      @context.fill()
-      @context.closePath()
-    for i in [0...@points.length]
-      @context.beginPath() 
-      @context.arc(@points[i].x, @points[i].y, 1, 0, 2 * Math.PI, false)
-      @context.fillStyle = 'cyan'
-      @context.fill()
-      @context.closePath()
-    */
-
+    if (Circle.debug) {
+      for (j = _j = 0, _ref1 = newPoints.length; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; j = 0 <= _ref1 ? ++_j : --_j) {
+        this.context.beginPath();
+        this.context.arc(newPoints[j].x, newPoints[j].y, 1, 0, 2 * Math.PI, false);
+        this.context.fillStyle = 'white';
+        this.context.fill();
+        this.context.closePath();
+      }
+      for (i = _k = 0, _ref2 = this.points.length; 0 <= _ref2 ? _k < _ref2 : _k > _ref2; i = 0 <= _ref2 ? ++_k : --_k) {
+        this.context.beginPath();
+        this.context.arc(this.points[i].x, this.points[i].y, 2, 0, 2 * Math.PI, false);
+        this.context.strokeStyle = 'white';
+        this.context.stroke();
+        this.context.closePath();
+      }
+    }
     return null;
   };
 
   Circle.prototype.getOctavesPosition = function() {
     var angle, i, x, y, _i, _ref;
     this.points = [];
-    for (i = _i = 0, _ref = this.octaves; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-      angle = i * Math.PI * 2 / this.octaves;
+    for (i = _i = 0, _ref = Circle.octaves; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+      angle = i * Math.PI * 2 / Circle.octaves;
       x = this.position.x + Math.cos(angle) * (this.radius + this.indexes[i]);
       y = this.position.y + Math.sin(angle) * (this.radius + this.indexes[i]);
-      this.points.push({
-        x: x,
-        y: y
-      });
+      this.points.push(new Vec2(x, y));
     }
     return null;
   };
@@ -201,17 +261,13 @@ Visualizer = (function() {
 
   Visualizer.prototype.analyzers = [];
 
-  Visualizer.prototype.precision = 0.03;
+  Visualizer.prototype.precision = 0.11;
 
   Visualizer.prototype.background = [0, 0, 0];
 
   function Visualizer(mixer) {
     this.render = __bind(this.render, this);
     this.togglePlayback = __bind(this.togglePlayback, this);
-    this.toggleInfo = __bind(this.toggleInfo, this);
-    this.handleKey = __bind(this.handleKey, this);
-    this.handleClickTouch = __bind(this.handleClickTouch, this);
-    this.handleKeyDown = __bind(this.handleKeyDown, this);
     this.resize = __bind(this.resize, this);
     this.canvas = document.createElement('canvas');
     this.context = this.canvas.getContext('2d');
@@ -245,72 +301,14 @@ Visualizer = (function() {
     return null;
   };
 
-  Visualizer.prototype.enableControls = function() {
-    $('#loop-A').bind('click touchstart', this.handleClickTouch);
-    $('#loop-S').bind('click touchstart', this.handleClickTouch);
-    $('#loop-D').bind('click touchstart', this.handleClickTouch);
-    $('#loop-F').bind('click touchstart', this.handleClickTouch);
-    $('#loop-G').bind('click touchstart', this.handleClickTouch);
-    $('#info').bind('click touchstart', this.toggleInfo);
-    $('#playback').bind('click touchstart', this.togglePlayback);
-    window.addEventListener('keydown', this.handleKeyDown);
-    return null;
-  };
-
-  Visualizer.prototype.handleKeyDown = function(e) {
-    switch (e.keyCode) {
-      case 65:
-        this.handleKey('A');
-        break;
-      case 83:
-        this.handleKey('S');
-        break;
-      case 68:
-        this.handleKey('D');
-        break;
-      case 70:
-        this.handleKey('F');
-        break;
-      case 71:
-        this.handleKey('G');
-        break;
-      case 32:
-        this.togglePlayback();
-    }
-    return null;
-  };
-
-  Visualizer.prototype.handleClickTouch = function(e) {
-    this.handleKey($(e.currentTarget)[0].id.split('-')[1]);
-    return null;
-  };
-
-  Visualizer.prototype.handleKey = function(key) {
-    var maps, target;
-    target = $('#loop-' + key);
-    maps = [];
-    maps['A'] = 0;
-    maps['S'] = 1;
-    maps['D'] = 2;
-    maps['F'] = 3;
-    maps['G'] = 4;
-    target.toggleClass('enable');
-    if (target.hasClass('enable')) {
-      Application.STAGE.mixer.dispatch(maps[key], 1);
+  Visualizer.prototype.toggleInfo = function() {
+    $('#info').toggleClass('disable');
+    if ($('#info').hasClass('disable')) {
+      $('#more-info').hide();
     } else {
-      Application.STAGE.mixer.dispatch(maps[key], 0);
-    }
-    return null;
-  };
-
-  Visualizer.prototype.toggleInfo = function(e) {
-    $('#info').toggleClass('enable');
-    if ($('#info').hasClass('enable')) {
       $('#more-info').show().css({
         'display': 'table'
       });
-    } else {
-      $('#more-info').hide();
     }
     return null;
   };
@@ -322,10 +320,6 @@ Visualizer = (function() {
   };
 
   Visualizer.prototype.handleState = function(state) {
-    $('#playback span i').removeClass(Visualizer.WAIT);
-    $('#playback span i').removeClass(Visualizer.STOP);
-    $('#playback span i').removeClass(Visualizer.PLAY);
-    $('#playback span i').addClass(state);
     if (state === Visualizer.PLAY) {
       Application.STAGE.playback.dispatch('stop');
     } else if (state === Visualizer.STOP) {
@@ -335,15 +329,20 @@ Visualizer = (function() {
   };
 
   Visualizer.prototype.render = function() {
-    var circle, i, j, value, _i, _j, _ref, _ref1;
-    this.context.beginPath();
-    this.context.fillStyle = 'rgba(' + Math.round(this.background[0]) + ',' + Math.round(this.background[1]) + ',' + Math.round(this.background[2]) + ', ' + this.precision + ')';
-    this.context.fillRect(0, 0, this.width, this.height);
-    this.context.closePath();
+    var alpha, circle, i, j, value, _i, _j, _ref, _ref1;
+    alpha = Circle.debug === true ? 1 : this.precision;
+    if (alpha === 1) {
+      this.context.clearRect(0, 0, this.width, this.height);
+    } else {
+      this.context.beginPath();
+      this.context.fillStyle = 'rgba(' + Math.round(this.background[0]) + ',' + Math.round(this.background[1]) + ',' + Math.round(this.background[2]) + ', ' + alpha + ')';
+      this.context.fillRect(0, 0, this.width, this.height);
+      this.context.closePath();
+    }
     for (i = _i = 0, _ref = this.circles.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
       circle = this.circles[i];
-      value = this.analyzers[i].octaves(circle.octaves);
-      for (j = _j = 0, _ref1 = circle.octaves; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; j = 0 <= _ref1 ? ++_j : --_j) {
+      value = this.analyzers[i].octaves(Circle.octaves);
+      for (j = _j = 0, _ref1 = Circle.octaves; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; j = 0 <= _ref1 ? ++_j : --_j) {
         circle.feed(j, value[j]);
       }
       circle.draw();
@@ -468,6 +467,7 @@ Audio = (function() {
     this.onSamplerProgress = __bind(this.onSamplerProgress, this);
     this.context = new webkitAudioContext();
     this.mixer = new Mixer8(this.context);
+    this.info = document.getElementById('info');
     this.sampler = new Sampler(this.context);
     this.sampler.signals.progress.add(this.onSamplerProgress);
     this.sampler.signals.complete.add(this.onSamplerComplete);
@@ -480,11 +480,12 @@ Audio = (function() {
   }
 
   Audio.prototype.onSamplerProgress = function(type, params) {
-    console.log('Loading sound', params.progress, 'of', params.total);
+    this.info.innerHTML = 'Loading sound ' + params.progress + ' of ' + params.total;
     return null;
   };
 
   Audio.prototype.onSamplerComplete = function(type, params) {
+    this.info.innerHTML = '"Nude" is a song by the English rock band <strong>Radiohead</strong>, appearing as the third track on their 2007 album In Rainbows.<br/><br/>Visualization inspired by the Nike Moves App.';
     Application.STAGE.playback.dispatch('ready');
     return null;
   };
@@ -548,43 +549,84 @@ Application = (function() {
   Application.STAGE = {};
 
   function Application() {
-    this.onMixer = __bind(this.onMixer, this);
     this.onPlayback = __bind(this.onPlayback, this);
-    var color, colors, gui, i, _i,
+    var bass, color, drums, folder, fx, gtr, gui, i, voice, _i,
       _this = this;
-    this.colors = {
-      drums: '#ff0000',
-      bass: '#6d89e3',
-      guitar: '#a2e368',
-      effects: '#00afa3',
-      voice: '#ffffff'
+    this.settings = {
+      info: true,
+      debug: false,
+      drums: {
+        color: '#ff0000',
+        volume: 1
+      },
+      bass: {
+        color: '#6d89e3',
+        volume: 1
+      },
+      guitar: {
+        color: '#a2e368',
+        volume: 1
+      },
+      effects: {
+        color: '#00afa3',
+        volume: 1
+      },
+      voice: {
+        color: '#ffffff',
+        volume: 1
+      }
     };
     Application.STAGE.playback = new signals.Signal();
     Application.STAGE.playback.add(this.onPlayback);
-    Application.STAGE.mixer = new signals.Signal();
-    Application.STAGE.mixer.add(this.onMixer);
     this.audio = new Audio();
-    this.visualizer = new Visualizer(this.audio.mixer, this.colors);
+    this.visualizer = new Visualizer(this.audio.mixer, this.settings.colors);
     gui = new dat.GUI();
-    colors = gui.addFolder('Colors');
-    colors.open();
-    colors.addColor(this.colors, 'drums').onChange(function(value) {
+    gui.add(this.settings, 'info').onChange(function(value) {
+      return _this.visualizer.toggleInfo();
+    });
+    gui.add(this.settings, 'debug').onChange(function(value) {
+      return Circle.debug = value;
+    });
+    gui.add(Circle, 'factor', -1, 1);
+    gui.add(Circle, 'octaves', 3, 20).step(1);
+    gui.add(this.visualizer, 'precision', 0, 1).step(0.01).name('blur');
+    gui.addColor(this.visualizer, 'background');
+    folder = gui.addFolder('Instruments');
+    drums = folder.addFolder('Drums');
+    drums.addColor(this.settings.drums, 'color').onChange(function(value) {
       return _this.changeColor(0, value);
     });
-    colors.addColor(this.colors, 'bass').onChange(function(value) {
+    drums.add(this.settings.drums, 'volume', 0, 1).onChange(function(value) {
+      return _this.audio.mixer.channels[0].changeVolume(value);
+    });
+    bass = folder.addFolder('Bass');
+    bass.addColor(this.settings.bass, 'color').onChange(function(value) {
       return _this.changeColor(1, value);
     });
-    colors.addColor(this.colors, 'guitar').onChange(function(value) {
+    bass.add(this.settings.bass, 'volume', 0, 1).onChange(function(value) {
+      return _this.audio.mixer.channels[1].changeVolume(value);
+    });
+    gtr = folder.addFolder('Guitar');
+    gtr.addColor(this.settings.guitar, 'color').onChange(function(value) {
       return _this.changeColor(2, value);
     });
-    colors.addColor(this.colors, 'effects').onChange(function(value) {
+    gtr.add(this.settings.guitar, 'volume', 0, 1).onChange(function(value) {
+      return _this.audio.mixer.channels[2].changeVolume(value);
+    });
+    fx = folder.addFolder('Effects');
+    fx.addColor(this.settings.effects, 'color').onChange(function(value) {
       return _this.changeColor(3, value);
     });
-    colors.addColor(this.colors, 'voice').onChange(function(value) {
+    fx.add(this.settings.effects, 'volume', 0, 1).onChange(function(value) {
+      return _this.audio.mixer.channels[3].changeVolume(value);
+    });
+    voice = folder.addFolder('Voice');
+    voice.addColor(this.settings.voice, 'color').onChange(function(value) {
       return _this.changeColor(4, value);
     });
-    colors.addColor(this.visualizer, 'background');
-    colors.add(this.visualizer, 'precision', 0, 1).step(0.01).name('motion blur');
+    voice.add(this.settings.voice, 'volume', 0, 1).onChange(function(value) {
+      return _this.audio.mixer.channels[4].changeVolume(value);
+    });
     for (i = _i = 0; _i < 5; i = ++_i) {
       color = this.transformIndexIntoColor(i);
       this.changeColor(i, color);
@@ -592,14 +634,7 @@ Application = (function() {
   }
 
   Application.prototype.changeColor = function(index, color) {
-    var id;
     this.visualizer.circles[index].color = color;
-    id = this.transformIndexIntoId(index);
-    $(id).css({
-      'border': '1px solid ' + color,
-      'box-shadow': '0px 0px 14px ' + color,
-      'color': color
-    });
     return null;
   };
 
@@ -608,49 +643,26 @@ Application = (function() {
     color = '';
     switch (index) {
       case 0:
-        color = this.colors.drums;
+        color = this.settings.drums.color;
         break;
       case 1:
-        color = this.colors.bass;
+        color = this.settings.bass.color;
         break;
       case 2:
-        color = this.colors.guitar;
+        color = this.settings.guitar.color;
         break;
       case 3:
-        color = this.colors.effects;
+        color = this.settings.effects.color;
         break;
       case 4:
-        color = this.colors.voice;
+        color = this.settings.voice.color;
     }
     return color;
-  };
-
-  Application.prototype.transformIndexIntoId = function(index) {
-    var id;
-    id = '';
-    switch (index) {
-      case 0:
-        id = '#loop-A';
-        break;
-      case 1:
-        id = '#loop-S';
-        break;
-      case 2:
-        id = '#loop-D';
-        break;
-      case 3:
-        id = '#loop-F';
-        break;
-      case 4:
-        id = '#loop-G';
-    }
-    return id;
   };
 
   Application.prototype.onPlayback = function(value) {
     switch (value) {
       case 'ready':
-        this.visualizer.enableControls();
         this.visualizer.handleState(Visualizer.STOP);
         break;
       case 'play':
@@ -658,26 +670,6 @@ Application = (function() {
         break;
       case 'stop':
         this.audio.stopAll();
-    }
-    return null;
-  };
-
-  Application.prototype.onMixer = function(track, value) {
-    var color, id, target;
-    this.audio.mixer.channels[track].changeVolume(value);
-    id = this.transformIndexIntoId(track);
-    color = this.transformIndexIntoColor(track);
-    target = $(id);
-    if (!target.hasClass('enable')) {
-      target.css({
-        'border': '1px solid #666',
-        'box-shadow': 'none'
-      });
-    } else {
-      target.css({
-        'border': '1px solid ' + color,
-        'box-shadow': '0px 0px 14px ' + color
-      });
     }
     return null;
   };

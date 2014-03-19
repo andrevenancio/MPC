@@ -5,63 +5,13 @@ html {
 
 body {
   margin: 0;
-  background-color: white;
+  background-color: black;
   width: 100%;
   height: 100%;
 }
 
 canvas {
   display: block;
-}
-
-.pad,
-.playback {
-  position: relative;
-  display: table;
-  float: left;
-  width: 50px;
-  height: 50px;
-  color: #666666;
-  box-sizing: border-box;
-  border-radius: 8px;
-  margin: 1px;
-  cursor: pointer;
-}
-.pad span,
-.playback span {
-  display: table-cell;
-  vertical-align: middle;
-  text-align: center;
-  text-align: center;
-  color: #666666;
-  -webkit-font-smoothing: antialiased;
-  font-family: sans-serif;
-  color: #cccccc;
-}
-.pad div,
-.playback div {
-  color: #333333;
-}
-
-.playback {
-  border: 1px solid cyan;
-  color: cyan;
-}
-
-#pads {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  text-align: center;
-  color: #666666;
-  -webkit-font-smoothing: antialiased;
-  font-family: sans-serif;
-}
-
-#controls {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
 }
 
 #more-info {
@@ -86,4 +36,16 @@ canvas {
   color: #666666;
   -webkit-font-smoothing: antialiased;
   font-family: sans-serif;
+}
+
+.ce {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.gh {
+  position: absolute;
+  top: 0;
+  left: 0;
 }

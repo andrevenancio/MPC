@@ -10,37 +10,22 @@
     <meta property="og:image" content="http://andrevenancio.github.io/MPC/deploy/preview.png"/>
     <meta property="og:site_name" content="MPC Prototype"/>
     <meta property="og:description" content="WebAudio API MPC prototype"/>
-    <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
-    <script src="//cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js"></script>
-    <script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
-    <script src="js/signals.1.0.0.min.js"></script>
-    <!--<script src="http://localhost:8080/socket.io/socket.io.js"></script>-->
   </head>
   <body>
 
-    <div id="pads">
-      <fieldset>
-        <legend>Loops</legend>
-        <div id="loop-A" class="pad enable"><span>A<div>drums</div></span></div>
-        <div id="loop-S" class="pad enable"><span>S<div>bass</div></span></div>
-        <div id="loop-D" class="pad enable"><span>D<div>guitar</div></span></div>
-        <div id="loop-F" class="pad enable"><span>F<div>fx</div></span></div>
-        <div id="loop-G" class="pad enable"><span>G<div>voice</div></span></div>
-      </fieldset>
-    </div>
-
     <div id="more-info">
-      <div>
-        "Nude" is a song by the English rock band <strong>Radiohead</strong>, appearing as the third track on their 2007 album In Rainbows.<br/><br/>
-        Visualization inspired by the Nike Moves App.
+      <div id="info">
+        Please wait
       </div>
     </div>
 
-    <div id="controls">
-      <div id="playback" class="playback"><span><i class="fa"></i></span></div>
-    </div>
+    <a class="gh" href="//github.com/andrevenancio/mpc/" target="_blank"><img alt="Fork me on GitHub" src="https://github-camo.global.ssl.fastly.net/567c3a48d796e2fc06ea80409cc9dd82bf714434/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f6461726b626c75655f3132313632312e706e67"></a>
+    <a class="ce" href="//www.chromeexperiments.com/detail/mpc/" target="_blank"><img src="ce.png" alt="See my Experiment on ChromeExperiments.com" /></a>
 
+    <script src="//cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
     <script type="text/javascript" src="js/app.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
   </body>

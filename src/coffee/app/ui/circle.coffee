@@ -1,15 +1,16 @@
 #import app.math.mathutils
+#import app.math.vec2
 class Circle
-  position:
-    x: 0
-    y: 0
+  position: new Vec2()
   points: []
-  constructor: (context, octaves = 6, radius = 150, color = '#0FF') ->
+  @factor: 0.5
+  @octaves: 6
+  @debug: false
+  constructor: (context, radius = 150, color = '#0FF') ->
     @context = context
-    @octaves = octaves
     @radius = radius
-    @indexes = new Float32Array @octaves
-    @color = color#'#'+Math.floor(Math.random()*16777215).toString(16)
+    @indexes = new Float32Array 20
+    @color = color
     
   translate: (x, y) ->
     @position.x = x
@@ -24,7 +25,7 @@ class Circle
     @getOctavesPosition()
 
     #generate control points for quadratic bezier based on points
-    newPoints = MathUtils.calculateControlPoints @points, 0.5
+    newPoints = MathUtils.calculateControlPoints @points, Circle.factor
 
     #CUBIC BEZIER
     a = 0
@@ -44,31 +45,28 @@ class Circle
     @context.stroke()
     @context.closePath()
 
-    ### DEBUG POINTS ###
-    ###
-    for j in [0...newPoints.length]
-      @context.beginPath()
-      @context.arc(newPoints[j].x, newPoints[j].y, 1, 0, 2 * Math.PI, false)
-      @context.fillStyle = 'green'
-      @context.fill()
-      @context.closePath()
-    for i in [0...@points.length]
-      @context.beginPath() 
-      @context.arc(@points[i].x, @points[i].y, 1, 0, 2 * Math.PI, false)
-      @context.fillStyle = 'cyan'
-      @context.fill()
-      @context.closePath()
-    ###
+    if Circle.debug
+      for j in [0...newPoints.length]
+        @context.beginPath()
+        @context.arc(newPoints[j].x, newPoints[j].y, 1, 0, 2 * Math.PI, false)
+        @context.fillStyle = 'white'
+        @context.fill()
+        @context.closePath()
+      for i in [0...@points.length]
+        @context.beginPath() 
+        @context.arc(@points[i].x, @points[i].y, 2, 0, 2 * Math.PI, false)
+        @context.strokeStyle = 'white'
+        @context.stroke()
+        @context.closePath()
+
     null
 
   getOctavesPosition: ->
     @points = []
-    for i in [0...@octaves]
-      angle = (i * Math.PI*2 / @octaves)
+    for i in [0...Circle.octaves]
+      angle = (i * Math.PI*2 / Circle.octaves)
       x = @position.x + Math.cos(angle) * (@radius + @indexes[i])
       y = @position.y + Math.sin(angle) * (@radius + @indexes[i])
 
-      @points.push 
-        x: x
-        y: y
+      @points.push new Vec2 x, y
     null

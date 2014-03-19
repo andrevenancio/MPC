@@ -3,12 +3,15 @@
 class Audio
   isPlaying: false
   sources: []
+  
   constructor: ->
     #sets global AudioContext
     @context = new webkitAudioContext()
 
     #adds a mixer with 8 channels
     @mixer = new Mixer8 @context
+
+    @info = document.getElementById 'info'
 
     #adds a sampler
     @sampler = new Sampler @context
@@ -22,10 +25,11 @@ class Audio
     @sampler.load()
 
   onSamplerProgress: (type, params) =>
-    console.log 'Loading sound', params.progress, 'of', params.total
+    @info.innerHTML = 'Loading sound ' + params.progress + ' of ' + params.total
     null
 
   onSamplerComplete: (type, params) =>
+    @info.innerHTML = '"Nude" is a song by the English rock band <strong>Radiohead</strong>, appearing as the third track on their 2007 album In Rainbows.<br/><br/>Visualization inspired by the Nike Moves App.'
     Application.STAGE.playback.dispatch 'ready'
     null
 

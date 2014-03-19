@@ -1,5 +1,5 @@
 #MPC prototype
-WebAudio API MPC prototype
+Just a quick Prof of concept, for a client.
 
 #### Examples
 [![Example](http://andrevenancio.github.com/MPC/deploy/preview.png)](http://andrevenancio.github.com/MPC/deploy/)
