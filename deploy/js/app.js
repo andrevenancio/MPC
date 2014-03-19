@@ -550,7 +550,7 @@ Application = (function() {
 
   function Application() {
     this.onPlayback = __bind(this.onPlayback, this);
-    var bass, color, drums, folder, fx, gtr, gui, i, voice, _i,
+    var bass, color, drums, folder, fx, gtr, i, voice, _i,
       _this = this;
     this.settings = {
       info: true,
@@ -580,18 +580,18 @@ Application = (function() {
     Application.STAGE.playback.add(this.onPlayback);
     this.audio = new Audio();
     this.visualizer = new Visualizer(this.audio.mixer, this.settings.colors);
-    gui = new dat.GUI();
-    gui.add(this.settings, 'info').onChange(function(value) {
+    this.gui = new dat.GUI();
+    this.gui.add(this.settings, 'info').onChange(function(value) {
       return _this.visualizer.toggleInfo();
     });
-    gui.add(this.settings, 'debug').onChange(function(value) {
+    this.gui.add(this.settings, 'debug').onChange(function(value) {
       return Circle.debug = value;
     });
-    gui.add(Circle, 'factor', -1, 1);
-    gui.add(Circle, 'octaves', 3, 20).step(1);
-    gui.add(this.visualizer, 'precision', 0, 1).step(0.01).name('blur');
-    gui.addColor(this.visualizer, 'background');
-    folder = gui.addFolder('Instruments');
+    this.gui.add(Circle, 'factor', -1, 1);
+    this.gui.add(Circle, 'octaves', 3, 20).step(1);
+    this.gui.add(this.visualizer, 'precision', 0, 1).step(0.01).name('blur');
+    this.gui.addColor(this.visualizer, 'background');
+    folder = this.gui.addFolder('Instruments');
     drums = folder.addFolder('Drums');
     drums.addColor(this.settings.drums, 'color').onChange(function(value) {
       return _this.changeColor(0, value);
@@ -664,6 +664,8 @@ Application = (function() {
     switch (value) {
       case 'ready':
         this.visualizer.handleState(Visualizer.STOP);
+        this.gui.add(this.audio, 'playAll').name('Play');
+        this.gui.add(this.audio, 'stopAll').name('Stop');
         break;
       case 'play':
         this.audio.playAll();
