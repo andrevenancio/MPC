@@ -30,15 +30,15 @@ class Application
     @audio = new Audio()
     @visualizer = new Visualizer @audio.mixer, @settings.colors
 
-    gui = new dat.GUI()
-    gui.add(@settings, 'info').onChange((value) => @visualizer.toggleInfo())
-    gui.add(@settings, 'debug').onChange((value) => Circle.debug = value)
-    gui.add Circle, 'factor', -1, 1
-    gui.add(Circle, 'octaves', 3, 20).step(1)
-    gui.add(@visualizer, 'precision', 0, 1).step(0.01).name('blur')
-    gui.addColor @visualizer, 'background'
+    @gui = new dat.GUI()
+    @gui.add(@settings, 'info').onChange((value) => @visualizer.toggleInfo())
+    @gui.add(@settings, 'debug').onChange((value) => Circle.debug = value)
+    @gui.add Circle, 'factor', -1, 1
+    @gui.add(Circle, 'octaves', 3, 20).step(1)
+    @gui.add(@visualizer, 'precision', 0, 1).step(0.01).name('blur')
+    @gui.addColor @visualizer, 'background'
     
-    folder = gui.addFolder 'Instruments'
+    folder = @gui.addFolder 'Instruments'
     drums = folder.addFolder 'Drums'
     drums.addColor(@settings.drums, 'color').onChange((value) => @changeColor 0, value)
     drums.add(@settings.drums, 'volume', 0, 1).onChange((value) => @audio.mixer.channels[0].changeVolume value)
@@ -54,6 +54,7 @@ class Application
     voice = folder.addFolder 'Voice'
     voice.addColor(@settings.voice, 'color').onChange((value) => @changeColor 4, value)
     voice.add(@settings.voice, 'volume', 0, 1).onChange((value) => @audio.mixer.channels[4].changeVolume value)
+
 
     for i in [0...5]
       color = @transformIndexIntoColor i
@@ -78,6 +79,8 @@ class Application
     switch value
       when 'ready'
         @visualizer.handleState Visualizer.STOP
+        @gui.add(@audio, 'playAll').name('Play')
+        @gui.add(@audio, 'stopAll').name('Stop')
       when 'play' then @audio.playAll()
       when 'stop' then @audio.stopAll()
     null
